@@ -27,7 +27,10 @@ const AiSystemsBlueprintVisualizer: React.FC<InteractiveComponentProps> = ({ int
         setError('');
         setMermaidCode('');
 
-        const prompt = `Based on the following system description, generate a Mermaid.js graph diagram code that visually represents the architecture. Use a 'graph TD' (Top Down) layout. Use clear labels for nodes and arrows.
+        const prompt = `Based on the following system description, generate a Mermaid.js graph diagram code that visually represents the architecture.
+- Use a 'graph TD' (Top Down) layout.
+- Use clear labels for nodes.
+- For arrows (links), use the format 'A -->|label text| B'. Do NOT use colons (:) in the arrow definitions.
 
 Description:
 ${description}`;
