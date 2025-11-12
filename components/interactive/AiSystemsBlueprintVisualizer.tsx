@@ -3,7 +3,7 @@ import type { InteractiveComponentProps } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { getAiClient } from '../../services/aiService';
 import { SparklesIcon } from '../icons/SparklesIcon';
-import MermaidDiagram from '../MermaidDiagram';
+import { Modality } from '@google/genai';
 
 const placeholder = `Our system has a React Frontend that sends requests to a Python Flask Backend.
 The backend communicates with a Gemini Pro model for complex reasoning and a Gemini Flash model for quick summarization.
@@ -13,7 +13,7 @@ The Flask app also integrates with a third-party payment API.`;
 const AiSystemsBlueprintVisualizer: React.FC<InteractiveComponentProps> = ({ interactiveId }) => {
     const { user, addPoints, updateProgress } = useAuth();
     const [description, setDescription] = useState(placeholder);
-    const [mermaidCode, setMermaidCode] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const hasCompleted = user?.progress.completedInteractives.includes(interactiveId);
@@ -25,22 +25,33 @@ const AiSystemsBlueprintVisualizer: React.FC<InteractiveComponentProps> = ({ int
         }
         setLoading(true);
         setError('');
-        setMermaidCode('');
+        setImageUrl('');
 
-        const prompt = `Based on the following system description, generate a Mermaid.js graph diagram code that visually represents the architecture.
-- Use a 'graph TD' (Top Down) layout.
-- Use clear labels for nodes.
-- For arrows (links), use the format 'A -->|label text| B'. Do NOT use colons (:) in the arrow definitions.
-
-Description:
-${description}`;
+        const prompt = `Generate an industrial-quality, state-of-the-art systems architecture blueprint based on the following description. The blueprint should be visually complex, detailed, and photorealistic, resembling a professional engineering diagram with data flow, component connections, and latency annotations. System Description: "${description}"`;
 
         try {
             const ai = await getAiClient();
-            const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-            // Clean the response to get only the Mermaid code block
-            const code = response.text.replace(/```mermaid\n|```/g, '').trim();
-            setMermaidCode(code);
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash-image',
+                contents: { parts: [{ text: prompt }] },
+                config: {
+                    responseModalities: [Modality.IMAGE],
+                },
+            });
+            
+            let foundImage = false;
+            for (const part of response.candidates[0].content.parts) {
+                if (part.inlineData) {
+                    const base64ImageBytes: string = part.inlineData.data;
+                    setImageUrl(`data:image/png;base64,${base64ImageBytes}`);
+                    foundImage = true;
+                    break;
+                }
+            }
+
+            if (!foundImage) {
+                throw new Error("The model did not return an image. Try a different description.");
+            }
 
             if (!hasCompleted) {
                 addPoints(30);
@@ -48,7 +59,7 @@ ${description}`;
             }
         } catch (e) {
             console.error(e);
-            setError('Failed to generate the diagram. Please try a different description.');
+            setError(e instanceof Error ? e.message : 'Failed to generate the diagram. Please try a different description.');
         } finally {
             setLoading(false);
         }
@@ -79,10 +90,10 @@ ${description}`;
                         {loading ? 'Visualizing...' : 'Generate Blueprint'}
                     </button>
                 </div>
-                <div className="p-2 bg-brand-bg rounded-lg shadow-neumorphic-in">
-                    {loading && <div className="animate-pulse h-full w-full bg-brand-shadow-dark/20 rounded-md flex items-center justify-center text-brand-text-light">Generating...</div>}
-                    {error && <p className="text-red-500 p-4">{error}</p>}
-                    {mermaidCode && <MermaidDiagram chart={mermaidCode} />}
+                <div className="p-2 bg-brand-bg rounded-lg shadow-neumorphic-in flex items-center justify-center min-h-[300px]">
+                    {loading && <div className="animate-pulse h-full w-full bg-brand-shadow-dark/20 rounded-md flex items-center justify-center text-brand-text-light">Generating blueprint...</div>}
+                    {error && <p className="text-red-500 p-4 text-center">{error}</p>}
+                    {imageUrl && !loading && <img src={imageUrl} alt="AI-generated system blueprint" className="rounded-md object-contain max-h-full max-w-full" />}
                 </div>
             </div>
         </div>
