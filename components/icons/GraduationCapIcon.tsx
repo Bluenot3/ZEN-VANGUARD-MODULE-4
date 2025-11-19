@@ -1,9 +1,15 @@
 import React from 'react';
 
 export const GraduationCapIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M12 14l9-5-9-5-9 5 9 5z" />
-        <path d="M12 14l6.16-3.422A12.083 12.083 0 0121 18c0 1.93-3.84 3.5-9 3.5s-9-1.57-9-3.5c0-1.93 3.84-3.5 9-3.5a12.083 12.083 0 014.84 1.078L12 14z" />
-         <path strokeLinecap="round" strokeLinejoin="round" d="M12 14v7m0-7l-9-5m9 5l9-5m-9 5v7" />
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+        {/* Cap Top - Diamond Shape with subtle perspective */}
+        <path d="M12 3L2 8L12 13L22 8L12 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text"/>
+        
+        {/* Cap Base - Curved for sleekness */}
+        <path d="M5 10V15C5 15 7 17 12 17C17 17 19 15 19 15V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-light"/>
+        
+        {/* Tassel - Dynamic curve with accent color */}
+        <path d="M22 8L22 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-light"/>
+        <circle cx="22" cy="13" r="1.5" className="fill-brand-primary animate-bounce"/>
     </svg>
 );

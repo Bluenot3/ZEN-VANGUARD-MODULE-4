@@ -1,38 +1,25 @@
 import React from 'react';
 
-// Fix: Renamed from LabIcon to LabIconV1 to resolve a name conflict with the aliased export at the end of the file.
-export const LabIconV1: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-pale-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 00.517 3.86l2.387.477a2 2 0 001.806.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 01-.517-3.86l-2.387-.477a2 2 0 01-.547-1.806l.477-2.387a6 6 0 013.86-.517l.318.158a6 6 0 003.86-.517l2.387.477a2 2 0 011.806.547a2 2 0 01.547 1.806l-.477 2.387a6 6 0 01-3.86.517l-.318-.158a6 6 0 00-3.86.517l-2.387-.477a2 2 0 00-1.806-.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 003.86.517l.318.158a6 6 0 013.86.517l2.387-.477a2 2 0 011.806-.547a2 2 0 01.547 1.806l-.477 2.387a6 6 0 01-3.86.517" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
-
-
-// Alternate Beaker Icon
-export const LabIconV2: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-pale-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 3.5V8a.5.5 0 00.5.5h4" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10 14h4" />
-    </svg>
-);
-
-
-// Simplified Beaker Icon that looks more like a lab beaker
-export const LabIconV3: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-pale-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 3h14M5 3a2 2 0 012-2h10a2 2 0 012 2M5 3v16a2 2 0 002 2h10a2 2 0 002-2V3M8 9h8m-8 4h8" />
-        <path d="M9 19c-1 0-1.5-.5-1.5-1.5S8 16 9 16s1.5.5 1.5 1.5S10 19 9 19z" fill="currentColor" stroke="none" />
-        <path d="M15 19c-1 0-1.5-.5-1.5-1.5S14 16 15 16s1.5.5 1.5 1.5S16 19 15 19z" fill="currentColor" stroke="none" />
-    </svg>
-);
-
-// Final chosen icon - a simple, clean beaker
+// Sleek Lab Beaker Icon
 export const LabIconV4: React.FC = () => (
-     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-pale-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h16M4 4v14a2 2 0 002 2h12a2 2 0 002-2V4M8 4l2 3h4l2-3M8 12h8" />
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+        <defs>
+             <linearGradient id="liquid-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="currentColor" stopOpacity="0.1"/>
+                <stop offset="100%" stopColor="currentColor" stopOpacity="0.6"/>
+            </linearGradient>
+        </defs>
+        {/* Beaker Outline */}
+        <path d="M19 21H5C4.44772 21 4 20.5523 4 20V19L6.8 9.2C6.92727 8.75453 6.99091 8.5318 7 8.30902C7.00909 8.08623 7.00909 7.86344 7 7.64066V3H17V7.64066C16.9909 7.86344 16.9909 8.08623 17 8.30902C17.0091 8.5318 17.0727 8.75453 17.2 9.2L20 19V20C20 20.5523 19.5523 21 19 21Z" 
+              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-light"/>
+        
+        {/* Liquid Fill - Dynamic */}
+        <path d="M6.5 11L17.5 11L19 18C19 18.5523 18.5523 19 18 19H6C5.44772 19 5 18.5523 5 18L6.5 11Z" 
+              fill="url(#liquid-grad)" className="text-pale-yellow opacity-80"/>
+        
+        {/* Bubbles */}
+        <circle cx="12" cy="14" r="1.5" className="fill-white animate-ping opacity-50" style={{animationDuration: '3s'}}/>
+        <circle cx="14" cy="16" r="1" className="fill-white animate-ping opacity-40" style={{animationDuration: '2s', animationDelay: '0.5s'}}/>
     </svg>
 );
 
