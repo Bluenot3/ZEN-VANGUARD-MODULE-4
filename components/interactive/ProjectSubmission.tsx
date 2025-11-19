@@ -33,11 +33,9 @@ const ProjectSubmission: React.FC<{ interactiveId: string }> = ({ interactiveId 
             const formData = new FormData();
             formData.append(GOOGLE_FORM_ENTRY_ID, url);
 
-            // Using 'no-cors' is essential for submitting to Google Forms from a client-side app.
-            // The response will be opaque (status 0), but the submission will succeed.
             await fetch(GOOGLE_FORM_ACTION_URL, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'no-cors', // Crucial for Google Forms
                 body: formData
             });
 
@@ -50,7 +48,8 @@ const ProjectSubmission: React.FC<{ interactiveId: string }> = ({ interactiveId 
 
         } catch (err) {
             console.error("Form submission error:", err);
-            setError('There was a network error submitting your project. Please try again.');
+            // In no-cors mode, we can't see the error details, but if the fetch throws, it's a network error.
+            setError('Network error. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -58,7 +57,7 @@ const ProjectSubmission: React.FC<{ interactiveId: string }> = ({ interactiveId 
 
     return (
         <div className="my-12 p-1 rounded-3xl bg-gradient-to-br from-brand-primary/20 via-white to-brand-secondary/20 shadow-xl transform transition-all hover:scale-[1.01] duration-500 group">
-             <div className="bg-brand-bg/95 backdrop-blur-sm rounded-[1.4rem] p-8 relative overflow-hidden">
+             <div className="bg-brand-bg/95 backdrop-blur-sm rounded-[1.4rem] p-8 relative overflow-hidden border border-white/50">
                  
                  {/* Abstract Background Decor */}
                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>

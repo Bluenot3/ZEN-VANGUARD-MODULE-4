@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, activeSection, isOpen = fal
           onClick={(e) => handleLinkClick(e, section.id)}
           className={`flex items-center justify-between py-2.5 pr-4 rounded-xl text-sm transition-all duration-300 border border-transparent relative overflow-hidden
             ${isActive
-              ? 'text-brand-primary font-bold bg-white/60 backdrop-blur-md shadow-sm border-l-4 border-l-brand-primary pl-4 translate-x-1'
+              ? 'text-brand-primary font-bold bg-white/80 backdrop-blur-md shadow-sm border-l-4 border-l-brand-primary pl-4 translate-x-1'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 hover:pl-4 hover:translate-x-1'
             }
             ${isCompleted && !isActive ? 'text-slate-500/70 hover:text-slate-700' : ''}
@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, activeSection, isOpen = fal
             className={`
                 fixed inset-y-0 left-0 z-50 w-80 bg-white/90 backdrop-blur-2xl border-r border-white/20 shadow-2xl transform transition-transform duration-500 cubic-bezier(0.2, 0.8, 0.2, 1)
                 lg:transform-none lg:static lg:z-auto lg:w-80 lg:flex-shrink-0 lg:bg-transparent lg:border-none lg:shadow-none lg:backdrop-blur-none
-                lg:block lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)] lg:translate-x-0
+                lg:block lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)] lg:opacity-100 lg:pointer-events-auto lg:translate-x-0
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
         >
