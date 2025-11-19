@@ -73,6 +73,7 @@ export type InteractiveComponentType =
   | 'PoeticFusionGenerator'
   | 'PrivacyLensDashboard'
   | 'ProfessionalEmailWriter'
+  | 'ProjectSubmission'
   | 'PromptArchitectWorkbench'
   | 'PromptHealthDashboard'
   | 'PromptMutationStudio'
@@ -100,7 +101,7 @@ export interface ContentItem {
   type: ContentItemType;
   // FIX: Made content optional as interactive components don't have it.
   content?: string | string[];
-  language?: 'python' | 'solidity' | 'bash' | 'javascript';
+  language?: 'python' | 'solidity' | 'bash' | 'javascript' | 'text' | 'markdown' | 'json';
   output?: string;
   component?: InteractiveComponentType;
   effectId?: string;

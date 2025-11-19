@@ -66,6 +66,7 @@ const PitchBuilder = React.lazy(() => import('./interactive/PitchBuilder'));
 const PoeticFusionGenerator = React.lazy(() => import('./interactive/PoeticFusionGenerator'));
 const PrivacyLensDashboard = React.lazy(() => import('./interactive/PrivacyLensDashboard'));
 const ProfessionalEmailWriter = React.lazy(() => import('./interactive/ProfessionalEmailWriter'));
+const ProjectSubmission = React.lazy(() => import('./interactive/ProjectSubmission'));
 const PromptArchitectWorkbench = React.lazy(() => import('./interactive/PromptArchitectWorkbench'));
 const PromptHealthDashboard = React.lazy(() => import('./interactive/PromptHealthDashboard'));
 const PromptMutationStudio = React.lazy(() => import('./interactive/PromptMutationStudio'));
@@ -151,6 +152,7 @@ const componentMap: { [key: string]: React.LazyExoticComponent<React.FC<any>> } 
     PoeticFusionGenerator,
     PrivacyLensDashboard,
     ProfessionalEmailWriter,
+    ProjectSubmission,
     PromptArchitectWorkbench,
     PromptHealthDashboard,
     PromptMutationStudio,
