@@ -1,4 +1,4 @@
-import React, 'react';
+import React, { useState } from 'react';
 import type { InteractiveComponentProps } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { getAiClient } from '../../services/aiService';
@@ -13,10 +13,10 @@ const milestones = [
 
 const NeuralEvolutionChronicle: React.FC<InteractiveComponentProps> = ({ interactiveId }) => {
     const { user, addPoints, updateProgress } = useAuth();
-    const [explanation, setExplanation] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState('');
-    const [activeYear, setActiveYear] = React.useState<number | null>(null);
+    const [explanation, setExplanation] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [activeYear, setActiveYear] = useState<number | null>(null);
 
     const hasCompleted = user?.progress.completedInteractives.includes(interactiveId);
 

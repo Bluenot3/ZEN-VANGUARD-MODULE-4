@@ -6,9 +6,9 @@ interface AuthContextType {
   loading: boolean;
   updateProgress: (id: string, type: 'section' | 'interactive') => void;
   addPoints: (amount: number) => void;
-  // FIX: Add login and signup to the context type to resolve errors in LoginPage.tsx.
   login: (email: string, pass: string) => Promise<void>;
   signup: (email: string, pass: string) => Promise<void>;
+  resetProgress: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,17 +50,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             const newProgress = { ...prevUser.progress };
             let updated = false;
+            let pointsToAdd = 0;
 
             if (type === 'section' && !newProgress.completedSections.includes(id)) {
                 newProgress.completedSections.push(id);
+                pointsToAdd = 10; // Award 10 XP for each section viewed
                 updated = true;
             } else if (type === 'interactive' && !newProgress.completedInteractives.includes(id)) {
                 newProgress.completedInteractives.push(id);
+                // Interactives might have their own point logic, but base award is here
                 updated = true;
             }
 
             if (updated) {
-                const updatedUser = { ...prevUser, progress: newProgress };
+                const updatedUser = { 
+                    ...prevUser, 
+                    points: prevUser.points + pointsToAdd,
+                    progress: newProgress 
+                };
                 localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
                 return updatedUser;
             }
@@ -78,10 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
     }, []);
 
-    // FIX: Implement mock login and signup functions to resolve errors in the unused LoginPage component.
     const login = useCallback(async (email: string, _pass: string) => {
-        // Mock login. In a real app, you'd call an API.
-        // We'll just create a user object and save it.
         const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         const loggedInUser: User = {
             email: email,
@@ -95,11 +99,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const signup = useCallback(async (email: string, pass: string) => {
-        // Mock signup is same as login for this app.
         await login(email, pass);
     }, [login]);
 
-    const value = { user, loading, updateProgress, addPoints, login, signup };
+    const resetProgress = useCallback(() => {
+        setUser(prevUser => {
+            if (!prevUser) return null;
+            const resetUser: User = {
+                ...prevUser,
+                points: 0,
+                progress: { completedSections: [], completedInteractives: [] }
+            };
+            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(resetUser));
+            return resetUser;
+        });
+    }, []);
+
+    const value = { user, loading, updateProgress, addPoints, login, signup, resetProgress };
 
     return (
         <AuthContext.Provider value={value}>

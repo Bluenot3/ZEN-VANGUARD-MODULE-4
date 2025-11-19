@@ -1,5 +1,3 @@
-
-
 import React, { Suspense } from 'react';
 import type { ContentItem, Section } from '../types';
 import CodeBlock from './CodeBlock';
@@ -185,54 +183,87 @@ interface SectionRendererProps {
 const SectionRenderer: React.FC<SectionRendererProps> = ({ item, section }) => {
   switch (item.type) {
     case 'paragraph':
-      return <p className="mb-6 text-lg text-brand-text-light leading-relaxed">{item.content}</p>;
+      return <p className="mb-6 text-lg text-slate-600 leading-relaxed font-light text-justify selection:bg-blue-100">{item.content}</p>;
     case 'heading':
-        return <h3 className="text-xl md:text-2xl font-bold text-brand-text mb-4 mt-8">{item.content}</h3>;
+        return (
+            <div className="mt-12 mb-6 flex items-center">
+                 <div className="w-1 h-8 bg-brand-primary rounded-full mr-4 shadow-glow-blue"></div>
+                 <h3 className="text-2xl font-bold text-brand-text tracking-tight">
+                    {item.content}
+                </h3>
+            </div>
+        );
     case 'quote':
-        return <blockquote className="border-l-4 border-brand-primary pl-4 my-6 text-xl italic text-brand-text-light">{item.content}</blockquote>;
+        return (
+            <blockquote className="relative pl-8 pr-6 py-6 my-8 bg-slate-50 rounded-xl border-l-4 border-brand-primary/80 italic text-xl text-slate-700 shadow-sm">
+                <p className="relative z-10 leading-relaxed">{item.content}</p>
+            </blockquote>
+        );
     case 'list':
         if (Array.isArray(item.content)) {
             return (
-                <ul className="list-disc list-inside mb-6 pl-4 text-lg text-brand-text-light space-y-2">
-                    {item.content.map((li, i) => <li key={i}>{li}</li>)}
+                <ul className="space-y-3 mb-8 my-6 ml-2">
+                    {item.content.map((li, i) => (
+                        <li key={i} className="flex items-start gap-3 text-lg text-slate-600">
+                             <span className="mt-2.5 w-1.5 h-1.5 bg-brand-secondary rounded-full flex-shrink-0"></span>
+                             <span>{li}</span>
+                        </li>
+                    ))}
                 </ul>
             );
         }
         return null;
     case 'code':
         return (
-            <div className="my-6">
-                {/* FIX: Provide a fallback for the now-optional 'content' property to prevent runtime errors. */}
+            <div className="my-8 rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-[#1e1e1e]">
                 <CodeBlock code={(item.content || '') as string} language={item.language || 'javascript'} />
             </div>
         );
     case 'terminal':
-        return <SimulatedTerminal 
-                    // FIX: Provide a fallback for the now-optional 'content' property to prevent runtime errors.
+        return (
+             <div className="my-8 rounded-xl overflow-hidden shadow-2xl border border-slate-800/50 bg-[#1e1e1e]">
+                <SimulatedTerminal 
                     code={(item.content || '') as string} 
                     language={item.language || 'bash'} 
                     output={item.output || ''} 
                     effectId={item.effectId} 
                     onRunCustomEffect={item.onRunCustomEffect} 
-                />;
+                />
+            </div>
+        );
     case 'mermaid':
-        // FIX: Provide a fallback for the now-optional 'content' property to prevent runtime errors.
         return <MermaidDiagram chart={(item.content || '') as string} />;
     case 'image':
-        // FIX: Provide a fallback for the now-optional 'content' property to prevent runtime errors.
-        return <img src={(item.content || '') as string} alt={item.alt || ''} className="my-6 rounded-lg shadow-neumorphic-out" />;
+        return <img src={(item.content || '') as string} alt={item.alt || ''} className="my-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 border border-slate-100 w-full object-cover" />;
     case 'interactive':
       if (item.component) {
         const InteractiveComponent = componentMap[item.component];
         if (InteractiveComponent) {
           return (
-            <Suspense fallback={<div className="text-center p-8">Loading Interactive...</div>}>
-              <InteractiveComponent interactiveId={item.interactiveId || section.id} />
-            </Suspense>
+            <div className="my-12 transform transition-all duration-500 hover:translate-y-[-2px]">
+                <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-1 relative overflow-hidden group">
+                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary"></div>
+                    <div className="relative bg-slate-50/50 rounded-xl p-1">
+                        {/* Interactive Label Badge */}
+                        <div className="absolute top-2 right-2 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold px-3 py-1 rounded-full z-10 uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                            <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></div>
+                            Interactive Lab
+                        </div>
+                        <Suspense fallback={
+                            <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-4">
+                                <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+                                <span className="text-xs tracking-widest uppercase font-medium">Initializing Lab Environment...</span>
+                            </div>
+                        }>
+                        <InteractiveComponent interactiveId={item.interactiveId || section.id} />
+                        </Suspense>
+                    </div>
+                </div>
+            </div>
           );
         }
       }
-      return <div className="text-red-500 my-8 p-6 bg-red-100 rounded-lg">Error: Interactive component "{item.component}" not found.</div>;
+      return <div className="text-red-500 my-8 p-6 bg-red-50 rounded-lg border border-red-200">Error: Interactive component "{item.component}" not found.</div>;
     default:
       return null;
   }

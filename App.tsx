@@ -10,9 +10,17 @@ import { useAuth } from './hooks/useAuth';
 
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState<string>('overview');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
     const { user, updateProgress } = useAuth();
     
+    // Keep a ref to the current user state to access it inside the observer callback
+    // without triggering a re-run of the effect (which would disconnect/reconnect the observer).
+    const userRef = useRef(user);
+    useEffect(() => {
+        userRef.current = user;
+    }, [user]);
+
     // Flatten sections for easier iteration
     const allSections = useMemo(() => {
         const sections: Section[] = [];
@@ -36,20 +44,21 @@ const App: React.FC = () => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         setActiveSection(entry.target.id);
-                        if(user && !user.progress.completedSections.includes(entry.target.id)) {
+                        // Check the ref instead of the dependency to avoid stale closures
+                        // without rebuilding the observer.
+                        const currentUser = userRef.current;
+                        if(currentUser && !currentUser.progress.completedSections.includes(entry.target.id)) {
                            updateProgress(entry.target.id, 'section');
                         }
                     }
                 });
             },
             {
-                rootMargin: '-50% 0px -50% 0px', // Trigger when section is in the middle of the viewport
-                threshold: 0,
+                rootMargin: '-20% 0px -60% 0px', // Trigger when section is nicely in view
+                threshold: 0.1,
             }
         );
         
-        // FIX: Iterate over object keys to ensure proper type inference for refs,
-        // preventing `ref` from being typed as `unknown`.
         const refs = sectionRefs.current;
         Object.keys(refs).forEach(key => {
             const element = refs[key];
@@ -57,20 +66,28 @@ const App: React.FC = () => {
         });
 
         return () => {
-            // FIX: Use the same robust iteration method for cleanup.
-            const currentRefs = sectionRefs.current;
-            Object.keys(currentRefs).forEach(key => {
-                const element = currentRefs[key];
-                if (element) observer.unobserve(element);
-            });
+            observer.disconnect();
         };
-    }, [allSections, updateProgress, user]);
+    }, [allSections, updateProgress]); // Removed 'user' dependency to prevent thrashing
 
     return (
-        <div className="bg-brand-bg min-h-screen font-sans text-brand-text">
-            <Header />
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8 mt-8">
-                <Sidebar sections={curriculumData.sections} activeSection={activeSection} />
+        <div className="bg-brand-bg min-h-screen font-sans text-brand-text relative selection:bg-brand-primary/20">
+            {/* Animated Background Blobs - Light Theme Pastels */}
+            <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-100/60 rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
+                <div className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-cyan-100/60 rounded-full mix-blend-multiply filter blur-[80px] animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-[-20%] left-[20%] w-[700px] h-[700px] bg-indigo-100/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000"></div>
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+            </div>
+
+            <Header onMenuClick={() => setIsSidebarOpen(true)} />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8 mt-8 relative">
+                <Sidebar 
+                    sections={curriculumData.sections} 
+                    activeSection={activeSection} 
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                />
                 <MainContent sections={curriculumData.sections} />
             </div>
             <Footer />
