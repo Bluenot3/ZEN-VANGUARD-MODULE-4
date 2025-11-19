@@ -14,14 +14,11 @@ const App: React.FC = () => {
     const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
     const { user, updateProgress } = useAuth();
     
-    // Keep a ref to the current user state to access it inside the observer callback
-    // without triggering a re-run of the effect (which would disconnect/reconnect the observer).
     const userRef = useRef(user);
     useEffect(() => {
         userRef.current = user;
     }, [user]);
 
-    // Flatten sections for easier iteration
     const allSections = useMemo(() => {
         const sections: Section[] = [];
         const flatten = (s: Section) => {
@@ -44,8 +41,6 @@ const App: React.FC = () => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         setActiveSection(entry.target.id);
-                        // Check the ref instead of the dependency to avoid stale closures
-                        // without rebuilding the observer.
                         const currentUser = userRef.current;
                         if(currentUser && !currentUser.progress.completedSections.includes(entry.target.id)) {
                            updateProgress(entry.target.id, 'section');
@@ -54,7 +49,7 @@ const App: React.FC = () => {
                 });
             },
             {
-                rootMargin: '-20% 0px -60% 0px', // Trigger when section is nicely in view
+                rootMargin: '-20% 0px -60% 0px',
                 threshold: 0.1,
             }
         );
@@ -68,16 +63,19 @@ const App: React.FC = () => {
         return () => {
             observer.disconnect();
         };
-    }, [allSections, updateProgress]); // Removed 'user' dependency to prevent thrashing
+    }, [allSections, updateProgress]);
 
     return (
-        <div className="bg-brand-bg min-h-screen font-sans text-brand-text relative selection:bg-brand-primary/20">
-            {/* Animated Background Blobs - Light Theme Pastels */}
+        <div className="bg-brand-bg min-h-screen font-sans text-brand-text relative selection:bg-brand-primary/20 selection:text-brand-primary-dark">
+            {/* Ambient Background Effects */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-100/60 rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
-                <div className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-cyan-100/60 rounded-full mix-blend-multiply filter blur-[80px] animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-[-20%] left-[20%] w-[700px] h-[700px] bg-indigo-100/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000"></div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+                 {/* Subtle Grain Texture */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+                
+                {/* Animated Blobs */}
+                <div className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-100/50 rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
+                <div className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-purple-100/50 rounded-full mix-blend-multiply filter blur-[80px] animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-[-20%] left-[20%] w-[700px] h-[700px] bg-cyan-100/40 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000"></div>
             </div>
 
             <Header onMenuClick={() => setIsSidebarOpen(true)} />

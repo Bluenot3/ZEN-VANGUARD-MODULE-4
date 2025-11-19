@@ -223,7 +223,7 @@ def call_chat_completion(
     url = base_url.rstrip("/") + "/v1/chat/completions"
 
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        "Authorization": f"Bearer \${api_key}",
         "Content-Type": "application/json",
     }
 
@@ -246,14 +246,14 @@ def call_chat_completion(
 
     if resp.status_code != 200:
         raise RuntimeError(
-            f"LLM API error: {resp.status_code} - {resp.text[:400]}"
+            f"LLM API error: \${resp.status_code} - \${resp.text[:400]}"
         )
 
     data = resp.json()
     try:
         return data["choices"][0]["message"]["content"]
     except Exception as e:
-        raise RuntimeError(f"Unexpected LLM response format: {e}\\n\\n{json.dumps(data, indent=2)}") from e
+        raise RuntimeError(f"Unexpected LLM response format: \${e}\\n\\n\${json.dumps(data, indent=2)}") from e
 
 
 # ============================================================
@@ -306,11 +306,11 @@ def build_user_prompt(
     detail_level: str,
 ) -> str:
     return f"""
-SOP Title: {sop_title or "Untitled SOP"}
-Context: {description or "N/A"}
-Industry: {industry or "General"}
-Tone: {tone or "Professional"}
-Detail Level: {detail_level or "Standard"}
+SOP Title: \${sop_title or "Untitled SOP"}
+Context: \${description or "N/A"}
+Industry: \${industry or "General"}
+Tone: \${tone or "Professional"}
+Detail Level: \${detail_level or "Standard"}
 Audience: mid-career professionals who need clarity and accountability.
 """.strip()
 
@@ -339,11 +339,11 @@ def sop_to_markdown(sop: Dict[str, Any]) -> str:
     def bullet(items):
         if not items:
             return "_None provided._"
-        return "\\n".join(f"- {i}" for i in items)
+        return "\\n".join(f"- \${i}" for i in items)
 
     md = []
 
-    md.append(f"# {sop.get('title', 'Standard Operating Procedure')}\\n")
+    md.append(f"# \${sop.get('title', 'Standard Operating Procedure')}\\n")
 
     md.append("## 1. Purpose")
     md.append(sop.get("purpose", "N/A"))
@@ -356,7 +356,7 @@ def sop_to_markdown(sop: Dict[str, Any]) -> str:
 
     md.append("\\n## 4. Roles & Responsibilities")
     for role in sop.get("roles", []):
-        md.append(f"### {role.get('name', 'Role')}")
+        md.append(f"### \${role.get('name', 'Role')}")
         md.append(bullet(role.get("responsibilities", [])))
 
     md.append("\\n## 5. Prerequisites")
@@ -364,8 +364,8 @@ def sop_to_markdown(sop: Dict[str, Any]) -> str:
 
     md.append("\\n## 6. Procedure (Step-by-Step)")
     for step in sop.get("steps", []):
-        md.append(f"### Step {step.get('step_number', '?')}: {step.get('title', 'Step')}")
-        md.append(f"**Owner:** {step.get('owner_role', 'N/A')}")
+        md.append(f"### Step \${step.get('step_number', '?')}: \${step.get('title', 'Step')}")
+        md.append(f"**Owner:** \${step.get('owner_role', 'N/A')}")
         md.append(step.get("description", ""))
         md.append("**Inputs:**")
         md.append(bullet(step.get("inputs", [])))
@@ -383,9 +383,9 @@ def sop_to_markdown(sop: Dict[str, Any]) -> str:
 
     v = sop.get("versioning", {})
     md.append("\\n## 10. Version Control")
-    md.append(f"- Version: {v.get('version', '1.0')}")
-    md.append(f"- Owner: {v.get('owner', 'N/A')}")
-    md.append(f"- Last Updated: {v.get('last_updated', 'N/A')}")
+    md.append(f"- Version: \${v.get('version', '1.0')}")
+    md.append(f"- Owner: \${v.get('owner', 'N/A')}")
+    md.append(f"- Last Updated: \${v.get('last_updated', 'N/A')}")
 
     return "\\n\\n".join(md)
 
@@ -498,7 +498,7 @@ def create_sop_steps_figure(sop: Dict[str, Any]) -> Figure:
             ax.text(
                 text_x,
                 owner_y,
-                f"Owner: {owner}",
+                f"Owner: \${owner}",
                 ha="left",
                 va="top",
                 fontsize=10,
@@ -605,7 +605,7 @@ def generate_sop_ui(
 
     except Exception as e:
         return (
-            f"❌ Error generating SOP:\\n\\n{e}",
+            f"❌ Error generating SOP:\\n\\n\${e}",
             "",
             create_sop_steps_figure({"steps": []}),
             api_key_state,
@@ -977,7 +977,7 @@ def call_chat_completion(
     url = base_url.rstrip("/") + "/v1/chat/completions"
 
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        "Authorization": f"Bearer \${api_key}",
         "Content-Type": "application/json",
     }
 
@@ -1000,7 +1000,7 @@ def call_chat_completion(
 
     if resp.status_code != 200:
         raise RuntimeError(
-            f"LLM API error {resp.status_code}: {resp.text[:500]}"
+            f"LLM API error \${resp.status_code}: \${resp.text[:500]}"
         )
 
     data = resp.json()
@@ -1008,7 +1008,7 @@ def call_chat_completion(
         return data["choices"][0]["message"]["content"]
     except Exception as e:
         raise RuntimeError(
-            f"Unexpected LLM response format: {e}\\n\\n{json.dumps(data, indent=2)}"
+            f"Unexpected LLM response format: \${e}\\n\\n\${json.dumps(data, indent=2)}"
         )
 
 
@@ -1035,7 +1035,7 @@ def call_firecrawl_scrape(
 
     api_url = "https://api.firecrawl.dev/v0/scrape"
     headers = {
-        "Authorization": f"Bearer {firecrawl_key}",
+        "Authorization": f"Bearer \${firecrawl_key}",
         "Content-Type": "application/json",
     }
 
@@ -1047,7 +1047,7 @@ def call_firecrawl_scrape(
 
     if resp.status_code != 200:
         raise RuntimeError(
-            f"Firecrawl error {resp.status_code}: {resp.text[:400]}"
+            f"Firecrawl error \${resp.status_code}: \${resp.text[:400]}"
         )
 
     data = resp.json()
@@ -1100,15 +1100,15 @@ def build_analysis_user_prompt(
 ) -> str:
     truncated = content_preview[:6000]  # keep context reasonable
     return f"""
-Source URL: {url or "N/A"}
+Source URL: \${url or "N/A"}
 
-Focus area: {focus}
+Focus area: \${focus}
 
 User notes / context:
-{user_notes or "N/A"}
+\${user_notes or "N/A"}
 
 Scraped or pasted content (truncated if long):
-\"\"\"{truncated}\"\"\"
+\"\"\"\${truncated}\"\"\"
 """.strip()
 
 
@@ -1134,7 +1134,7 @@ def analysis_to_markdown(analysis: Dict[str, Any]) -> str:
     def bullet(items: List[str]) -> str:
         if not items:
             return "_None identified._"
-        return "\\n".join(f"- {i}" for i in items)
+        return "\\n".join(f"- \${i}" for i in items)
 
     md: List[str] = []
 
@@ -1156,11 +1156,11 @@ def analysis_to_markdown(analysis: Dict[str, Any]) -> str:
         md.append("_None suggested yet — refine your prompt or focus._")
     else:
         for idx, act in enumerate(actions, start=1):
-            title = act.get("title", f"Action {idx}")
+            title = act.get("title", f"Action \${idx}")
             area = act.get("area", "General")
             desc = act.get("description", "")
-            md.append(f"### {idx}. {title}")
-            md.append(f"**Area:** {area}")
+            md.append(f"### \${idx}. \${title}")
+            md.append(f"**Area:** \${area}")
             md.append(desc or "_No description provided._")
 
     return "\\n\\n".join(md)
@@ -1264,7 +1264,7 @@ def generate_brief_ui(
         try:
             scraped_content = call_firecrawl_scrape(firecrawl_key, url, formats=["markdown"])
         except Exception as e:
-            scraped_content = f"(Firecrawl error: {e})"
+            scraped_content = f"(Firecrawl error: \${e})"
 
     # 2. Compose content preview (scraped + pasted)
     content_preview_parts = []
@@ -1298,7 +1298,7 @@ def generate_brief_ui(
 
     except Exception as e:
         empty_fig = analysis_to_figure({"key_points": [], "opportunities": [], "risks": [], "recommended_actions": []})
-        return f"❌ Error generating brief:\\n\\n{e}", "", empty_fig, llm_key_state
+        return f"❌ Error generating brief:\\n\\n\${e}", "", empty_fig, llm_key_state
 
 
 # ============================================================
